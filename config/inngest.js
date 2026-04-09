@@ -2,91 +2,86 @@
 import { Inngest } from "inngest";
 import connectDB from "./db";
 import Order from "@/models/Order";
+import User from "@/models/User";
 
 export const inngest = new Inngest({ id: "stolid-app" });
 
-// Inngest function to save user data to a database
+// ✅ Sync user creation
 export const syncUserCreation = inngest.createFunction(
-    {
-        id: 'sync-user-from-clerk'
-    },
-    {
-        event: 'clerk/user.created'
-    },
-    async({event}) => {
-        const {id, first_name, last_name, email_addresses, image_url} = event.data;
-        const userData = {
-            _id: id,
-            email: email_addresses[0].email_address,
-            name: first_name + ' ' + last_name,
-            imageUrl: image_url
-        }
-        await connectDB()
-        await User.create(userData)
-    }
-)
+  {
+    id: "sync-user-from-clerk",
+    triggers: [{ event: "clerk/user.created" }],
+  },
+  async ({ event }) => {
+    const { id, first_name, last_name, email_addresses, image_url } =
+      event.data;
 
-// Inngest function to update user data in database
+    const userData = {
+      _id: id,
+      email: email_addresses[0].email_address,
+      name: first_name + " " + last_name,
+      imageUrl: image_url,
+    };
 
+    await connectDB();
+    await User.create(userData);
+  }
+);
+
+// ✅ Update user
 export const syncUserUpdation = inngest.createFunction(
-    {
-        id: 'update-user-from-clerk'
-    },
-    {event: 'clerk/user.updated'},
-    async({event}) => {
-        const {id, first_name, last_name, email_addresses, image_url} = event.data;
-        const userData = {
-            _id: id,
-            email: email_addresses[0].email_address,
-            name: first_name + ' ' + last_name,
-            imageUrl: image_url
-        }
-        await connectDB()
-        await User.findByIdAndUpdate(id, userData)
-    }
-)
+  {
+    id: "update-user-from-clerk",
+    triggers: [{ event: "clerk/user.updated" }],
+  },
+  async ({ event }) => {
+    const { id, first_name, last_name, email_addresses, image_url } =
+      event.data;
 
-// Inngest Function to delete user from the database
+    const userData = {
+      _id: id,
+      email: email_addresses[0].email_address,
+      name: first_name + " " + last_name,
+      imageUrl: image_url,
+    };
 
+    await connectDB();
+    await User.findByIdAndUpdate(id, userData);
+  }
+);
+
+// ✅ Delete user
 export const syncUserDeletion = inngest.createFunction(
-    {
-        id: 'delete-user-with-clerk'
-    },
-    {
-        event: 'clerk/user.deleted'
-    },
-    async({event}) => {
-        const {id} = event.data;
-        
-        await connectDB()
-        await User.findByIdAndDelete(id)
-    }
-)
+  {
+    id: "delete-user-with-clerk",
+    triggers: [{ event: "clerk/user.deleted" }],
+  },
+  async ({ event }) => {
+    const { id } = event.data;
 
-//Inngest Function to create user's order in database
+    await connectDB();
+    await User.findByIdAndDelete(id);
+  }
+);
+
+// ✅ Create order
 export const createUserOrder = inngest.createFunction(
-    {
-        id: 'create-user-order',
-        batchEvents: {
-            maxSize: 5,
-            timeout: '5s'
-        }
-    }, 
-    {event: 'order/created'},
-    async ({event}) => {
-        const orders = events.map((event) => {
-            return {
-                userId: event.data.userrId,
-                items: event.data.items,
-                amount: event.data.amount,
-                address: event.data.address,
-                data: event.data.data
-            }
-        })
+  {
+    id: "create-user-order",
+    triggers: [{ event: "order/created" }],
+  },
+  async ({ event }) => {
+    const order = {
+      userId: event.data.userId,
+      items: event.data.items,
+      amount: event.data.amount,
+      address: event.data.address,
+      date: event.data.date,
+    };
 
-        await connectDB();
-        await Order.insertMany(orders)
+    await connectDB();
+    await Order.create(order);
 
-        return {success: true, processed: orders.length};
-    }
-)
+    return { success: true };
+  }
+);
