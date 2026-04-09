@@ -10,7 +10,7 @@ export const inngest = new Inngest({ id: "stolid-app" });
 export const syncUserCreation = inngest.createFunction(
   {
     id: "sync-user-from-clerk",
-    triggers: [{ event: "clerk/user.created" }],
+    triggers: { event: "clerk/user.created" },
   },
   async ({ event }) => {
     const { id, first_name, last_name, email_addresses, image_url } =
@@ -32,7 +32,7 @@ export const syncUserCreation = inngest.createFunction(
 export const syncUserUpdation = inngest.createFunction(
   {
     id: "update-user-from-clerk",
-    triggers: [{ event: "clerk/user.updated" }],
+    triggers: { event: "clerk/user.updated" },
   },
   async ({ event }) => {
     const { id, first_name, last_name, email_addresses, image_url } =
@@ -54,7 +54,7 @@ export const syncUserUpdation = inngest.createFunction(
 export const syncUserDeletion = inngest.createFunction(
   {
     id: "delete-user-with-clerk",
-    triggers: [{ event: "clerk/user.deleted" }],
+    triggers: { event: "clerk/user.deleted" },
   },
   async ({ event }) => {
     const { id } = event.data;
@@ -68,7 +68,7 @@ export const syncUserDeletion = inngest.createFunction(
 export const createUserOrder = inngest.createFunction(
   {
     id: "create-user-order",
-    triggers: [{ event: "order/created" }],
+    triggers: { event: "order/created" },
   },
   async ({ event }) => {
     const order = {
