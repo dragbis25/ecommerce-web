@@ -1,6 +1,12 @@
 // src/app/api/inngest/route.ts
 import { serve } from "inngest/next";
-import { createUserOrder, inngest, syncUserCreation, syncUserDeletion, syncUserUpdation } from "@/config/inngest";
+import {
+  createUserOrder,
+  inngest,
+  syncUserCreation,
+  syncUserDeletion,
+  syncUserUpdation
+} from "@/config/inngest";  // ✅ CORRECT
 // import { processTask } from "../../../inngest/functions";
 
 
